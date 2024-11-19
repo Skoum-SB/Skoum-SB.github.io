@@ -86,27 +86,22 @@
 		}
 	});
 
-	document.getElementById('sendButton').addEventListener('click', function (event) {
-	event.preventDefault(); // Empêche le rechargement de la page
+	const btn = document.getElementById('sendButton');
+	document.getElementById('contactForm').addEventListener('submit', function(event) {
+		event.preventDefault();
+		btn.value = 'Sending...';
 
-	const form = document.getElementById('contactForm');
-	const formData = new FormData(form);
+		const serviceID = 'default_service';
+		const templateID = 'template_uumhhxe';
+		const userID = 'sgxU_U3Jo-gEoQvbL';
 
-	// Envoyer les données via EmailJS
-	emailjs.send('service_e9gro46', 'template_uumhhxe', {
-		name: formData.get('name'),
-		email: formData.get('email'),
-		subject: formData.get('subject'),
-		message: formData.get('message'),
-	})
-	.then(function (response) {
-		alert('Message envoyé avec succès !');
-		form.reset(); // Réinitialiser le formulaire après envoi
-	})
-	.catch(function (error) {
-		alert('Erreur lors de l\'envoi du message : ' + error);
+		emailjs.sendForm(serviceID, templateID, this, userID)
+		.then(() => {
+			btn.value = 'Send Email';
+			alert('Sent!');
+		}, (err) => {
+			btn.value = 'Send Email';
+			alert(JSON.stringify(err));
+		});
 	});
-});
-
-
 })(jQuery);
