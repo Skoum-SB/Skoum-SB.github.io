@@ -40,21 +40,21 @@
 	
 	
 	// Porfolio isotope and filter
-	var portfolioIsotope = $('.portfolio-container').isotope({
-		itemSelector: '.portfolio-item',
+	var portfolioIsotope = $('.projects-container').isotope({
+		itemSelector: '.projects-item',
 		layoutMode: 'fitRows'
 	});
 
-	$('#portfolio-flters li').on('click', function () {
-		$("#portfolio-flters li").removeClass('filter-active');
+	$('#projects-flters li').on('click', function () {
+		$("#projects-flters li").removeClass('filter-active');
 		$(this).addClass('filter-active');
 
 		portfolioIsotope.isotope({filter: $(this).data('filter')});
 	});
 	
 	
-	// Review slider
-	$('.review-slider').slick({
+	// passions slider
+	$('.passions-slider').slick({
 		autoplay: true,
 		dots: false,
 		infinite: true,
@@ -81,15 +81,46 @@
 		if (this.hash !== "") {
 			event.preventDefault();
 			$('html, body').animate({
-			scrollTop: $('#contact').offset().top - 120
-		}, 1500, 'easeInOutExpo');
+				scrollTop: $('#contact').offset().top - 120
+			}, 1500, 'easeInOutExpo');
 		}
 	});
 
+	// Contact Form
 	const btn = document.getElementById('sendButton');
 	document.getElementById('contactForm').addEventListener('submit', function(event) {
 		event.preventDefault();
-		btn.value = 'Sending...';
+
+		const name = this.name.value.trim();
+		const email = this.email.value.trim();
+		const subject = this.subject.value.trim();
+		const message = this.message.value.trim();
+
+		if (!name || !email || !subject || !message) {
+			alert('Veuillez remplir tous les champs du formulaire.');
+			return;
+		}
+
+		const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]+$/;
+		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+		const textRegex = /^[^<>]+$/;
+
+		if (!nameRegex.test(name)) {
+			alert("Le champ 'Nom' contient des caractères non autorisés.");
+			return;
+		}
+
+		if (!emailRegex.test(email)) {
+			alert("Veuillez entrer une adresse email valide.");
+			return;
+		}
+
+		if (!textRegex.test(subject) || !textRegex.test(message)) {
+			alert("Les champs 'Objet' et 'Message' ne doivent pas contenir de caractères spéciaux (< ou >).");
+			return;
+		}
+
+		btn.innerText = 'Envoi en cours...';
 
 		const serviceID = 'default_service';
 		const templateID = 'template_uumhhxe';
@@ -97,10 +128,11 @@
 
 		emailjs.sendForm(serviceID, templateID, this, userID)
 		.then(() => {
-			btn.value = 'Send Email';
-			alert('Sent!');
+			btn.innerText = 'Envoyer un message';
+			alert('Message envoyé !');
+			this.reset();
 		}, (err) => {
-			btn.value = 'Send Email';
+			btn.innerText = 'Envoyer un message';
 			alert(JSON.stringify(err));
 		});
 	});

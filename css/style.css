@@ -315,7 +315,7 @@ a:focus {
 
 .header .content-inner {
     padding: 100px 30px;
-    background: url(../img/profile-test.png) right bottom no-repeat;
+    background: url(../img/profile.png) right bottom no-repeat;
     background-size: contain;
 }
 
@@ -560,6 +560,7 @@ a:focus {
 }
 
 
+
 /**********************************/
 /********* Experience CSS *********/
 /**********************************/
@@ -648,32 +649,36 @@ a:focus {
 
 
 /**********************************/
-/*********** Service CSS **********/
+/*********** skills CSS **********/
 /**********************************/
-.service {
+.skills {
     position: relative;
     padding: 60px 30px 30px 30px;
     background: #ffffff;
     border-bottom: 30px solid #FF000B;
 }
 
-.service .srv-col {
+.skills .srv-col {
     position: relative;
     width: 100%;
     margin-bottom: 30px;
 }
 
-.service .srv-col i {
+.skills .srv-col i {
     font-size: 30px;
     color: #FF6F61;
     margin-bottom: 15px;
 }
 
-.service .srv-col h3 {
+.skills .srv-col h3 {
     font-size: 20px;
     font-weight: 700;
     letter-spacing: 2px;
     margin-bottom: 5px;
+}
+
+.skills .srv-col p {
+    margin-top: 10px;
 }
 
 .experience .exp-col h4 {
@@ -695,23 +700,23 @@ a:focus {
 
 
 /**********************************/
-/********** Portfolio CSS *********/
+/********** projects CSS *********/
 /**********************************/
-.portfolio {
+.projects {
     position: relative;
     padding: 60px 30px 30px 30px;
     background: #ffffff;
     border-bottom: 30px solid #FF000B;
 }
 
-.portfolio #portfolio-flters {
+.projects #projects-flters {
     padding: 0;
     margin: -15px 0 30px 0;
     list-style: none;
     font-size: 0;
 }
 
-.portfolio #portfolio-flters li {
+.projects #projects-flters li {
     cursor: pointer;
     margin: 15px -1px 0 0;
     display: inline-block;
@@ -726,19 +731,19 @@ a:focus {
     transition: all 0.3s ease-in-out;
 }
 
-.portfolio #portfolio-flters li:hover,
-.portfolio #portfolio-flters li.filter-active {
+.projects #projects-flters li:hover,
+.projects #projects-flters li.filter-active {
     background: #FF6F61;
     color: #222222;
 }
 
-.portfolio .portfolio-item {
+.projects .projects-item {
     position: relative;
     height: 250px;
     overflow: hidden;
 }
 
-.portfolio .portfolio-item figure {
+.projects .projects-item figure {
     background: #ffffff;
     overflow: hidden;
     height: 220px;
@@ -747,20 +752,20 @@ a:focus {
     margin: 0; 
 }
 
-.portfolio .portfolio-item figure img {
+.projects .projects-item figure img {
     width: 100%; 
     height: 100%; 
     object-fit: cover; 
 }
 
-.portfolio .portfolio-item figure:hover img {
+.projects .projects-item figure:hover img {
     opacity: 0.3;
     transition: 0.3s;
 }
 
-.portfolio .portfolio-item figure .link-preview,
-.portfolio .portfolio-item figure .link-details,
-.portfolio .portfolio-item figure .portfolio-title {
+.projects .projects-item figure .link-preview,
+.projects .projects-item figure .link-details,
+.projects .projects-item figure .projects-title {
     position: absolute;
     display: inline-block;
     opacity: 0;
@@ -772,34 +777,34 @@ a:focus {
     transition: 0.2s linear;
 }
 
-.portfolio .portfolio-item figure .link-preview i,
-.portfolio .portfolio-item figure .link-details i {
+.projects .projects-item figure .link-preview i,
+.projects .projects-item figure .link-details i {
     color: #222222;
     padding-top: 10px;
     font-size: 16px;
 }
 
-.portfolio .portfolio-item figure .link-preview:hover,
-.portfolio .portfolio-item figure .link-details:hover {
+.projects .projects-item figure .link-preview:hover,
+.projects .projects-item figure .link-details:hover {
     background: #222222;
 }
 
-.portfolio .portfolio-item figure .link-preview:hover i,
-.portfolio .portfolio-item figure .link-details:hover i {
+.projects .projects-item figure .link-preview:hover i,
+.projects .projects-item figure .link-details:hover i {
     color: #FF6F61;
 }
 
-.portfolio .portfolio-item figure .link-preview {
+.projects .projects-item figure .link-preview {
     left: 50%;
     top: calc(25% - 18px);
 }
 
-.portfolio .portfolio-item figure .link-details {
+.projects .projects-item figure .link-details {
     right: 50%;
     top: calc(25% - 18px);
 }
 
-.portfolio .portfolio-item figure .portfolio-title {
+.projects .projects-item figure .projects-title {
     margin: 0;
     width: 100%;
     height: 50%;
@@ -814,11 +819,11 @@ a:focus {
     border-radius: 0;
 }
 
-.portfolio .portfolio-item figure .portfolio-title:hover {
+.projects .projects-item figure .projects-title:hover {
     text-decoration: none;
 }
 
-.portfolio .portfolio-item figure .portfolio-title span {
+.projects .projects-item figure .projects-title span {
     display: block;
     margin-top: 10px;
     font-family: 'Open Sans', sans-serif;
@@ -826,85 +831,108 @@ a:focus {
     font-weight: 300;
 }
 
-.portfolio .portfolio-item figure:hover .link-preview {
+.projects .projects-item figure:hover .link-preview {
     opacity: 1;
     left: calc(50% - 61px);
 }
 
-.portfolio .portfolio-item figure:hover .link-details {
+.projects .projects-item figure:hover .link-details {
     opacity: 1;
     right: calc(50% - 61px);
 }
 
-.portfolio .portfolio-item figure:hover .portfolio-title {
+.projects .projects-item figure:hover .projects-title {
     opacity: 1;
     top: 50%;
 }
 
+.project-item:not(.finished){
+    display: none;
+}
+
+.lightbox .lb-caption {
+    font-size: 14px;
+}
+
 
 /**********************************/
-/*********** Review CSS ***********/
+/*********** passions CSS ***********/
 /**********************************/
-.review {
+.passions {
     position: relative;
     background: #ffffff;
     border-bottom: 30px solid #FF000B;
 }
 
-.review .content-inner {
-    position: relative;
-    padding: 60px 30px;
-    background: url(../img/quote.png) right bottom no-repeat;
+.passions-slider-item {
+    display: flex;
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 20px;
 }
 
-.review .review-text p {
+.passions .content-inner {
+    position: relative;
+    padding: 60px 30px;
+}
+
+.passions-text {
+    flex-grow: 1; 
+}
+
+.passions-text p {
+    font-size: 16px; 
+    color: #333; 
+}
+
+.passions-text p:first-child {
+    font-weight: 700; 
+    font-size: 18px; 
+    margin-bottom: 10px;
+}
+
+.passions .passions-text p {
     font-size: 18px;
     font-style: italic;
 }
 
-.review .review-img {
-    display: flex;
-    align-items: center;
+.passions .passions-img {
+    flex-shrink: 0;
+    margin-right: 20px;
 }
 
-.review .review-img img {
-    width: 80px; 
-    height: 80px; 
+.passions .passions-img img {
+    width: 300px; 
+    height: 300px; 
     object-fit: cover;
+    margin-left: 40px;
     margin-right: 15px;
+    border-radius: 150px;
+    border: 5px solid red;
 }
 
-.review .review-name h3 {
+.passions .passions-name h3 {
     font-size: 18px;
     font-weight: 700;
     letter-spacing: 2px;
     margin-bottom: 5px;
 }
 
-.review .review-name p {
+.passions .passions-name p {
     font-size: 14px;
     margin-bottom: 0;
 }
 
-.review .review-text .ratting {
-    margin-bottom: 5px;
-}
-
-.review .review-text .ratting i {
-    color: #FF6F61;
-    font-size: 14px;
-}
-
-.review .slick-slider:hover .slick-prev {
+.passions .slick-slider:hover .slick-prev {
     left: 30px;
 }
 
-.review .slick-slider:hover .slick-next {
+.passions .slick-slider:hover .slick-next {
     right: 30px;
 }
 
-.review-slider .slick-prev,
-.review-slider .slick-next {
+.passions-slider .slick-prev,
+.passions-slider .slick-next {
     width: 35px;
     height: 35px;
     z-index: 1;
@@ -913,68 +941,68 @@ a:focus {
     background: rgba(255, 111, 97, .7);
 }
 
-.review-slider .slick-prev {
+.passions-slider .slick-prev {
     left: 55px;
 }
 
-.review-slider .slick-next {
+.passions-slider .slick-next {
     right: 55px;
 }
 
-.review-slider.slick-slider:hover .slick-prev {
+.passions-slider.slick-slider:hover .slick-prev {
     left: 15px;
     opacity: 1;
 }
 
-.review-slider.slick-slider:hover .slick-next {
+.passions-slider.slick-slider:hover .slick-next {
     right: 15px;
     opacity: 1;
 }
 
-.review-slider .slick-prev:hover,
-.review-slider .slick-prev:focus,
-.review-slider .slick-next:hover,
-.review-slider .slick-next:focus {
+.passions-slider .slick-prev:hover,
+.passions-slider .slick-prev:focus,
+.passions-slider .slick-next:hover,
+.passions-slider .slick-next:focus {
     background: rgba(0, 0, 0, .7);
 }
 
-.review-slider .slick-prev:hover::before,
-.review-slider .slick-prev:focus::before,
-.review-slider .slick-next:hover::before,
-.review-slider .slick-next:focus::before {
+.passions-slider .slick-prev:hover::before,
+.passions-slider .slick-prev:focus::before,
+.passions-slider .slick-next:hover::before,
+.passions-slider .slick-next:focus::before {
     color: #FF6F61;
 }
 
-.review-slider .slick-prev::before,
-.review-slider .slick-next::before {
+.passions-slider .slick-prev::before,
+.passions-slider .slick-next::before {
     font-family: "Font Awesome 5 Free";
     font-weight: 900;
     font-size: 18px;
     color: #ffffff;
 }
 
-.review-slider .slick-prev::before {
+.passions-slider .slick-prev::before {
     content: "\f104";
 }
 
-.review-slider .slick-next::before {
+.passions-slider .slick-next::before {
     content: "\f105";
 }
 
-.review-slider .slick-dots {
+.passions-slider .slick-dots {
     bottom: 15px;
 }
 
-.review-slider .slick-dots li button:before {
+.passions-slider .slick-dots li button:before {
     color: #ffffff;
     font-size: 15px;
 }
 
-.review-slider .slick-dots li.slick-active button:before {
+.passions-slider .slick-dots li.slick-active button:before {
     color: #FF6F61;
 }
 
-.review-slider.slick-slider {
+.passions-slider.slick-slider {
     margin-bottom: 0;
 }
 
