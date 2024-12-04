@@ -3,7 +3,7 @@
 /**********************************/
 body {
     color: #666666;
-    background: #FF000B;
+    background: #88000B;
     font-family: 'Open Sans', sans-serif;
 }
 
@@ -48,7 +48,7 @@ a:focus {
     width: 100%;
     padding: 15px;
     float: left;
-    background: #FF000B;
+    background: #88000B;
 }
 
 .wrapper .sidebar-header,
@@ -113,7 +113,7 @@ a:focus {
         content: "";
         width: 100%;
         height: 30px;
-        background: #FF000B;
+        background: #88000B;
         z-index: 1;
     }
     
@@ -351,7 +351,7 @@ a:focus {
 
 .large-btn .content-inner {
     font-size: 0;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 .large-btn .btn {
@@ -426,7 +426,7 @@ a:focus {
     position: relative;
     padding: 60px 30px;
     background: #ffffff;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 
@@ -494,7 +494,7 @@ a:focus {
     position: relative;
     padding: 60px 30px;
     background: #ffffff;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 .formation .edu-col {
@@ -502,7 +502,7 @@ a:focus {
     width: 100%;
     padding: 20px 0 20px 20px;
     border-left: 1px solid #FF6F61;
-    border-bottom: 1px solid #FF6F61;
+    border-bottom: 1px solid #88000B;
 }
 
 .formation .col-md-6:first-child .edu-col {
@@ -568,7 +568,7 @@ a:focus {
     position: relative;
     padding: 60px 30px;
     background: #ffffff;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 .experience .exp-col {
@@ -576,7 +576,7 @@ a:focus {
     width: 100%;
     padding: 20px 0 20px 20px;
     border-left: 1px solid #FF6F61;
-    border-bottom: 1px solid #FF6F61;
+    border-bottom: 1px solid #88000B;
 }
 
 .experience .col-md-6:first-child .exp-col {
@@ -655,7 +655,7 @@ a:focus {
     position: relative;
     padding: 60px 30px 30px 30px;
     background: #ffffff;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 .skills .srv-col {
@@ -706,7 +706,7 @@ a:focus {
     position: relative;
     padding: 60px 30px 30px 30px;
     background: #ffffff;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 .projects #projects-flters {
@@ -861,7 +861,7 @@ a:focus {
 .passions {
     position: relative;
     background: #ffffff;
-    border-bottom: 30px solid #FF000B;
+    border-bottom: 30px solid #88000B;
 }
 
 .passions-slider-item {
@@ -908,7 +908,7 @@ a:focus {
     margin-left: 40px;
     margin-right: 15px;
     border-radius: 150px;
-    border: 5px solid red;
+    border: 5px solid #FF6F61;
 }
 
 .passions .passions-name h3 {

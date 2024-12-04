@@ -1,7 +1,7 @@
 (function ($) {
 	"use strict";
 	
-	// Smooth scrolling on the navbar links
+
 	$(".navbar-nav a").on('click', function (event) {
 		if (this.hash !== "") {
 			event.preventDefault();
@@ -18,7 +18,6 @@
 	});
 	
 
-	// Typed Initiate
 	if ($('.header h2').length == 1) {
 		var typed_strings = $('.header .typed-text').text();
 		var typed = new Typed('.header h2', {
@@ -30,20 +29,19 @@
 		});
 	}
 	
-	
-	// Skills
+
 	$('.skills').waypoint(function () {
 		$('.progress .progress-bar').each(function () {
 			$(this).css("width", $(this).attr("aria-valuenow") + '%');
 		});
 	}, {offset: '80%'});
 	
-	
-	// Porfolio isotope and filter
+
 	var portfolioIsotope = $('.projects-container').isotope({
 		itemSelector: '.projects-item',
 		layoutMode: 'fitRows'
 	});
+
 
 	$('#projects-flters li').on('click', function () {
 		$("#projects-flters li").removeClass('filter-active');
@@ -53,7 +51,6 @@
 	});
 	
 	
-	// passions slider
 	$('.passions-slider').slick({
 		autoplay: true,
 		dots: false,
@@ -63,7 +60,6 @@
 	});
 	
 	
-	// Back to top button
 	$(window).scroll(function () {
 		if ($(this).scrollTop() > 100) {
 			$('.back-to-top').fadeIn('slow');
@@ -76,7 +72,7 @@
 		return false;
 	});
 
-	// Smooth scrolling for the contact button
+
 	$('a[href="#contact"]').on('click', function (event) {
 		if (this.hash !== "") {
 			event.preventDefault();
@@ -86,7 +82,7 @@
 		}
 	});
 
-	// Contact Form
+
 	const btn = document.getElementById('sendButton');
 	document.getElementById('contactForm').addEventListener('submit', function(event) {
 		event.preventDefault();
