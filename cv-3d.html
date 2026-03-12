@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Interactif 3D – Simon Bensiam</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --dark:    #222222;
+      --burg:    #88000B;
+      --coral:   #FF6F61;
+      --light:   #f5f5f5;
+      --glass:   rgba(20, 10, 10, 0.75);
+    }
+
+    body {
+      background: var(--dark);
+      font-family: 'Open Sans', sans-serif;
+      color: var(--light);
+      overflow: hidden;
+    }
+
+    /* ── Canvas ─────────────────────────────────── */
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+    }
+    #canvas-container canvas {
+      display: block;
+    }
+
+    /* ── HUD – top bar ───────────────────────────── */
+    #hud-top {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--burg);
+      z-index: 100;
+    }
+    #hud-top .title {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--coral);
+    }
+    #hud-top .back-link {
+      font-size: 0.8rem;
+      color: var(--light);
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    #hud-top .back-link:hover { opacity: 1; color: var(--coral); }
+    #hud-top .back-link i { margin-right: 6px; }
+
+    /* ── Instructions overlay (shown on load) ────── */
+    #intro-screen {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 5, 5, 0.92);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      z-index: 200;
+      transition: opacity 0.5s;
+    }
+    #intro-screen h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--coral);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    #intro-screen p {
+      font-size: 0.9rem;
+      opacity: 0.7;
+      max-width: 420px;
+      text-align: center;
+      line-height: 1.7;
+    }
+    #intro-screen .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 30px;
+      font-size: 0.82rem;
+      opacity: 0.85;
+    }
+    #intro-screen .controls-grid span.key {
+      display: inline-block;
+      background: var(--burg);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-weight: 600;
+      margin-right: 6px;
+    }
+    #start-btn {
+      margin-top: 10px;
+      padding: 12px 36px;
+      background: var(--burg);
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    #start-btn:hover { background: var(--coral); transform: scale(1.04); }
+
+    /* ── Info panel (shown when clicking an island) ─ */
+    #info-panel {
+      position: fixed;
+      right: -380px;
+      top: 60px;
+      bottom: 0;
+      width: 360px;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-left: 2px solid var(--burg);
+      padding: 30px 24px;
+      z-index: 100;
+      overflow-y: auto;
+      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    #info-panel.open { right: 0; }
+    #info-panel h3 {
+      color: var(--coral);
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--burg);
+      padding-bottom: 10px;
+    }
+    #info-panel .close-btn {
+      position: absolute;
+      top: 14px; right: 16px;
+      background: none;
+      border: none;
+      color: var(--light);
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+    }
+    #info-panel .close-btn:hover { opacity: 1; }
+    #panel-content { font-size: 0.85rem; line-height: 1.7; opacity: 0.9; }
+    #panel-content .entry {
+      margin-bottom: 18px;
+      padding-left: 12px;
+      border-left: 2px solid var(--burg);
+    }
+    #panel-content .entry-title {
+      font-weight: 700;
+      color: var(--coral);
+      margin-bottom: 2px;
+    }
+    #panel-content .entry-sub {
+      font-size: 0.78rem;
+      opacity: 0.65;
+      margin-bottom: 4px;
+    }
+
+    /* ── Section name tooltip ────────────────────── */
+    #tooltip {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      background: var(--glass);
+      border: 1px solid var(--burg);
+      border-radius: 20px;
+      font-size: 0.82rem;
+      letter-spacing: 1px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+    #tooltip.visible { opacity: 1; }
+
+    /* ── Mini-map ─────────────────────────────────── */
+    #minimap {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 110px;
+      height: 110px;
+      background: var(--glass);
+      border: 1px solid var(--burg);
+      border-radius: 8px;
+      z-index: 100;
+      overflow: hidden;
+    }
+    #minimap canvas { display: block; }
+
+    /* ── Loading bar ─────────────────────────────── */
+    #loading {
+      position: fixed;
+      inset: 0;
+      background: var(--dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      z-index: 300;
+    }
+    #loading-bar-wrap {
+      width: 240px;
+      height: 4px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #loading-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--coral);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    #loading p { font-size: 0.78rem; opacity: 0.5; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div id="loading">
+    <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+    <p>CHARGEMENT...</p>
+  </div>
+
+  <!-- Intro / help screen -->
+  <div id="intro-screen" style="display:none;">
+    <h2>CV Interactif</h2>
+    <p>Explore un monde 3D composé d'îles thématiques. Chaque île représente une section de mon CV. Clique dessus pour en savoir plus.</p>
+    <div class="controls-grid">
+      <div><span class="key">Clic gauche</span>Orbite</div>
+      <div><span class="key">Clic droit</span>Pan</div>
+      <div><span class="key">Scroll</span>Zoom</div>
+      <div><span class="key">Clic île</span>Ouvre la fiche</div>
+    </div>
+    <button id="start-btn">Explorer <i class="fas fa-play" style="margin-left:8px;"></i></button>
+  </div>
+
+  <!-- HUD top bar -->
+  <div id="hud-top">
+    <span class="title">Simon Bensiam — CV 3D</span>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i>Retour au portfolio</a>
+  </div>
+
+  <!-- Three.js canvas -->
+  <div id="canvas-container"></div>
+
+  <!-- Side info panel -->
+  <div id="info-panel">
+    <button class="close-btn" id="close-panel"><i class="fas fa-times"></i></button>
+    <h3 id="panel-title">Section</h3>
+    <div id="panel-content"></div>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tooltip"></div>
+
+  <!-- Mini-map -->
+  <div id="minimap">
+    <canvas id="minimap-canvas" width="110" height="110"></canvas>
+  </div>
+
+  <!-- Three.js r158 + OrbitControls via importmap -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { TWEEN } from 'three/addons/libs/tween.module.js';
+
+    // ── CV DATA ──────────────────────────────────────────────────────────
+    const CV_SECTIONS = [
+      {
+        id: 'formation',
+        label: 'Formation',
+        icon: '🎓',
+        color: 0x88000B,
+        position: { x: 0, z: 0 },
+        entries: [
+          { title: 'École d\'ingénieur', sub: '2022 – 2025', desc: 'Spécialisation Cybersécurité & développement logiciel.' },
+          { title: 'DUT Informatique', sub: '2020 – 2022', desc: 'IUT — programmation, réseaux, bases de données.' },
+          { title: 'Baccalauréat S', sub: '2020', desc: 'Mention Bien — spécialité mathématiques.' },
+        ]
+      },
+      {
+        id: 'experience',
+        label: 'Expérience',
+        icon: '💼',
+        color: 0x1a3a6e,
+        position: { x: 9, z: 4 },
+        entries: [
+          { title: 'Développeur – Lidl', sub: 'Stage 2024', desc: 'Développement d\'outils internes, automatisation de tâches.' },
+          { title: 'Analyste – Ventilgest', sub: 'Stage 2023', desc: 'Analyse de sécurité réseau, audit de vulnérabilités.' },
+          { title: 'Technicien – Sodigaine', sub: 'Stage 2022', desc: 'Support informatique, maintenance parc machines.' },
+        ]
+      },
+      {
+        id: 'competences',
+        label: 'Compétences',
+        icon: '⚙️',
+        color: 0x1a6e2e,
+        position: { x: -9, z: 4 },
+        entries: [
+          { title: 'Développement', sub: 'C · C++ · Python · JavaScript', desc: 'Projets académiques et personnels variés.' },
+          { title: 'Cybersécurité', sub: 'Pentest · Audit · CTF', desc: 'Certifications et challenges de sécurité.' },
+          { title: 'Outils', sub: 'Git · Linux · Docker · VS Code', desc: 'Environnements de développement quotidiens.' },
+        ]
+      },
+      {
+        id: 'projets',
+        label: 'Projets',
+        icon: '🚀',
+        color: 0x6e4a1a,
+        position: { x: 5, z: -9 },
+        entries: [
+          { title: 'SecureChat', sub: 'Python · Cryptographie', desc: 'Messagerie chiffrée de bout en bout.' },
+          { title: 'Pool-Game', sub: 'C · OpenGL', desc: 'Simulation de billard en 3D temps réel.' },
+          { title: 'SpaceScape', sub: 'JavaScript · Canvas', desc: 'Jeu de survie spatial dans le navigateur.' },
+        ]
+      },
+      {
+        id: 'passions',
+        label: 'Passions',
+        icon: '🎵',
+        color: 0x4a1a6e,
+        position: { x: -5, z: -9 },
+        entries: [
+          { title: 'Running', sub: 'Semi-marathon', desc: 'Courses sur route et trail, objectifs de chronos.' },
+          { title: 'Musique', sub: 'Production', desc: 'Production électronique, arrangement, mixage.' },
+          { title: 'Randonnée', sub: 'Nature', desc: 'Treks en montagne, exploration de nouveaux sentiers.' },
+        ]
+      },
+    ];
+
+    // ── SCENE SETUP ──────────────────────────────────────────────────────
+    const container = document.getElementById('canvas-container');
+    const W = window.innerWidth, H = window.innerHeight;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.9;
+    container.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0608);
+    scene.fog = new THREE.FogExp2(0x0a0608, 0.022);
+
+    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 300);
+    camera.position.set(0, 18, 26);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 6;
+    controls.maxDistance = 60;
+    controls.maxPolarAngle = Math.PI / 2.1;
+    controls.target.set(0, 0, 0);
+
+    // ── LIGHTS ───────────────────────────────────────────────────────────
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.35);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xfff4e0, 1.2);
+    dirLight.position.set(20, 30, 10);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(2048, 2048);
+    dirLight.shadow.camera.near = 1;
+    dirLight.shadow.camera.far = 100;
+    dirLight.shadow.camera.left = -30;
+    dirLight.shadow.camera.right = 30;
+    dirLight.shadow.camera.top = 30;
+    dirLight.shadow.camera.bottom = -30;
+    scene.add(dirLight);
+
+    // Accent point lights
+    [0xff6f61, 0x88000b, 0x4444ff].forEach((c, i) => {
+      const pl = new THREE.PointLight(c, 1.5, 25);
+      pl.position.set(Math.sin(i * 2.1) * 12, 5, Math.cos(i * 2.1) * 12);
+      scene.add(pl);
+    });
+
+    // ── STARS ────────────────────────────────────────────────────────────
+    function buildStars(count) {
+      const geo = new THREE.BufferGeometry();
+      const pos = new Float32Array(count * 3);
+      for (let i = 0; i < count * 3; i++) {
+        pos[i] = (Math.random() - 0.5) * 400;
+      }
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3, sizeAttenuation: true });
+      return new THREE.Points(geo, mat);
+    }
+    scene.add(buildStars(1500));
+
+    // ── GROUND GRID ──────────────────────────────────────────────────────
+    const gridHelper = new THREE.GridHelper(80, 40, 0x330005, 0x1a0003);
+    gridHelper.position.y = -2;
+    scene.add(gridHelper);
+
+    // ── ISLAND BUILDER ───────────────────────────────────────────────────
+    const islandMeshes = [];   // for raycasting
+    const islandGroups = [];   // for animation
+    const labelSprites = [];   // billboarded labels
+
+    function makeTextTexture(text, color) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256; canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 256, 64);
+      ctx.font = 'bold 26px Open Sans, sans-serif';
+      ctx.fillStyle = color || '#FF6F61';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 128, 32);
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    CV_SECTIONS.forEach((sec, i) => {
+      const group = new THREE.Group();
+      group.position.set(sec.position.x, 0, sec.position.z);
+      group.userData = { sectionId: sec.id };
+
+      // Island base (hexagonal column effect via cylinder)
+      const islandGeo = new THREE.CylinderGeometry(2.2, 2.8, 1.2, 6);
+      const islandMat = new THREE.MeshStandardMaterial({
+        color: sec.color,
+        roughness: 0.55,
+        metalness: 0.3,
+        emissive: new THREE.Color(sec.color).multiplyScalar(0.12),
+      });
+      const islandMesh = new THREE.Mesh(islandGeo, islandMat);
+      islandMesh.castShadow = true;
+      islandMesh.receiveShadow = true;
+      islandMesh.userData = { sectionId: sec.id, sectionLabel: sec.label };
+      group.add(islandMesh);
+      islandMeshes.push(islandMesh);
+
+      // Top cap (slightly lighter)
+      const capGeo = new THREE.CylinderGeometry(2.1, 2.1, 0.15, 6);
+      const capMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(sec.color).lerp(new THREE.Color(0xffffff), 0.2),
+        roughness: 0.3,
+        metalness: 0.5,
+      });
+      const cap = new THREE.Mesh(capGeo, capMat);
+      cap.position.y = 0.65;
+      group.add(cap);
+
+      // Glow ring
+      const ringGeo = new THREE.TorusGeometry(2.5, 0.06, 8, 40);
+      const ringMat = new THREE.MeshStandardMaterial({
+        color: sec.color,
+        emissive: new THREE.Color(sec.color),
+        emissiveIntensity: 1.2,
+        roughness: 0.2,
+      });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = 0.75;
+      group.add(ring);
+
+      // Floating icon label sprite
+      const spriteTex = makeTextTexture(sec.icon + '  ' + sec.label);
+      const spriteMat = new THREE.SpriteMaterial({ map: spriteTex, depthTest: false });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.scale.set(4.5, 1.1, 1);
+      sprite.position.y = 3.2;
+      group.add(sprite);
+      labelSprites.push(sprite);
+
+      // Floating particles above island
+      const pGeo = new THREE.BufferGeometry();
+      const pCount = 18;
+      const pPos = new Float32Array(pCount * 3);
+      for (let p = 0; p < pCount; p++) {
+        const angle = (p / pCount) * Math.PI * 2;
+        pPos[p * 3]     = Math.cos(angle) * (1.2 + Math.random() * 0.8);
+        pPos[p * 3 + 1] = Math.random() * 2.5 + 1;
+        pPos[p * 3 + 2] = Math.sin(angle) * (1.2 + Math.random() * 0.8);
+      }
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+      const pMat = new THREE.PointsMaterial({
+        color: sec.color,
+        size: 0.12,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.8,
+      });
+      const particles = new THREE.Points(pGeo, pMat);
+      group.add(particles);
+
+      // Store original Y for float animation (offset per island)
+      group.userData.floatOffset = i * (Math.PI * 2 / CV_SECTIONS.length);
+      group.userData.ring = ring;
+
+      scene.add(group);
+      islandGroups.push(group);
+    });
+
+    // ── CONNECTING LINES ─────────────────────────────────────────────────
+    function addConnectionLine(a, b) {
+      const points = [
+        new THREE.Vector3(a.x, 0, a.z),
+        new THREE.Vector3(b.x, 0, b.z),
+      ];
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({ color: 0x330005, transparent: true, opacity: 0.4 });
+      scene.add(new THREE.Line(geo, mat));
+    }
+    CV_SECTIONS.forEach(sec => {
+      addConnectionLine({ x: 0, z: 0 }, sec.position);
+    });
+
+    // ── RAYCASTER / CLICK ─────────────────────────────────────────────────
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const tooltip = document.getElementById('tooltip');
+    const infoPanel = document.getElementById('info-panel');
+    const panelTitle = document.getElementById('panel-title');
+    const panelContent = document.getElementById('panel-content');
+    let hoveredIsland = null;
+    let selectedSection = null;
+
+    function renderPanel(sectionId) {
+      const sec = CV_SECTIONS.find(s => s.id === sectionId);
+      if (!sec) return;
+      panelTitle.textContent = sec.icon + '  ' + sec.label;
+      panelContent.innerHTML = sec.entries.map(e => `
+        <div class="entry">
+          <div class="entry-title">${e.title}</div>
+          <div class="entry-sub">${e.sub}</div>
+          <div>${e.desc}</div>
+        </div>
+      `).join('');
+      infoPanel.classList.add('open');
+    }
+
+    renderer.domElement.addEventListener('mousemove', e => {
+      mouse.x =  (e.clientX / W) * 2 - 1;
+      mouse.y = -(e.clientY / H) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(islandMeshes);
+      if (hits.length > 0) {
+        const mesh = hits[0].object;
+        if (hoveredIsland !== mesh) {
+          hoveredIsland = mesh;
+          tooltip.textContent = mesh.userData.sectionLabel;
+          tooltip.classList.add('visible');
+          document.body.style.cursor = 'pointer';
+        }
+      } else {
+        hoveredIsland = null;
+        tooltip.classList.remove('visible');
+        document.body.style.cursor = 'default';
+      }
+    });
+
+    renderer.domElement.addEventListener('click', e => {
+      mouse.x =  (e.clientX / W) * 2 - 1;
+      mouse.y = -(e.clientY / H) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObjects(islandMeshes);
+      if (hits.length > 0) {
+        const sectionId = hits[0].object.userData.sectionId;
+        renderPanel(sectionId);
+        selectedSection = sectionId;
+
+        // Smooth camera move toward island
+        const sec = CV_SECTIONS.find(s => s.id === sectionId);
+        if (sec) {
+          const target = new THREE.Vector3(sec.position.x, 0, sec.position.z);
+          const camTarget = new THREE.Vector3(sec.position.x, 12, sec.position.z + 14);
+          animateCamera(camTarget, target);
+        }
+      }
+    });
+
+    document.getElementById('close-panel').addEventListener('click', () => {
+      infoPanel.classList.remove('open');
+      selectedSection = null;
+    });
+
+    // ── CAMERA ANIMATION ─────────────────────────────────────────────────
+    function animateCamera(newPos, newTarget) {
+      const startPos = camera.position.clone();
+      const startTarget = controls.target.clone();
+      const duration = 900;
+      const start = performance.now();
+
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; // ease-in-out
+        camera.position.lerpVectors(startPos, newPos, e);
+        controls.target.lerpVectors(startTarget, newTarget, e);
+        controls.update();
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    // ── MINI-MAP ──────────────────────────────────────────────────────────
+    const mmCanvas = document.getElementById('minimap-canvas');
+    const mmCtx = mmCanvas.getContext('2d');
+    const MM = 110;
+    const MAP_RANGE = 20;
+
+    function drawMinimap() {
+      mmCtx.clearRect(0, 0, MM, MM);
+      mmCtx.fillStyle = 'rgba(10,5,5,0.8)';
+      mmCtx.fillRect(0, 0, MM, MM);
+
+      function toMM(wx, wz) {
+        return {
+          x: ((wx + MAP_RANGE) / (MAP_RANGE * 2)) * MM,
+          y: ((wz + MAP_RANGE) / (MAP_RANGE * 2)) * MM,
+        };
+      }
+
+      // Islands
+      CV_SECTIONS.forEach(sec => {
+        const p = toMM(sec.position.x, sec.position.z);
+        mmCtx.beginPath();
+        mmCtx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+        mmCtx.fillStyle = '#' + new THREE.Color(sec.color).getHexString();
+        mmCtx.fill();
+        mmCtx.fillStyle = '#fff';
+        mmCtx.font = '9px sans-serif';
+        mmCtx.textAlign = 'center';
+        mmCtx.fillText(sec.label.slice(0, 3), p.x, p.y + 16);
+      });
+
+      // Camera position
+      const cp = toMM(camera.position.x, camera.position.z);
+      mmCtx.beginPath();
+      mmCtx.arc(cp.x, cp.y, 3, 0, Math.PI * 2);
+      mmCtx.fillStyle = '#FF6F61';
+      mmCtx.fill();
+    }
+
+    // ── INTRO / LOADING ───────────────────────────────────────────────────
+    const loadingEl = document.getElementById('loading');
+    const loadingBar = document.getElementById('loading-bar');
+    const introScreen = document.getElementById('intro-screen');
+
+    // Fake progress bar
+    let progress = 0;
+    const fakeLoad = setInterval(() => {
+      progress += Math.random() * 25;
+      loadingBar.style.width = Math.min(progress, 95) + '%';
+      if (progress >= 95) clearInterval(fakeLoad);
+    }, 80);
+
+    setTimeout(() => {
+      loadingBar.style.width = '100%';
+      setTimeout(() => {
+        loadingEl.style.display = 'none';
+        introScreen.style.display = 'flex';
+      }, 300);
+    }, 700);
+
+    document.getElementById('start-btn').addEventListener('click', () => {
+      introScreen.style.opacity = '0';
+      setTimeout(() => { introScreen.style.display = 'none'; }, 500);
+    });
+
+    // ── ANIMATION LOOP ────────────────────────────────────────────────────
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const t = clock.getElapsedTime();
+
+      // Float each island
+      islandGroups.forEach(group => {
+        const offset = group.userData.floatOffset;
+        group.position.y = Math.sin(t * 0.8 + offset) * 0.35;
+        // Slowly rotate the glow ring
+        if (group.userData.ring) {
+          group.userData.ring.rotation.z = t * 0.4;
+        }
+      });
+
+      controls.update();
+      drawMinimap();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // ── RESIZE ───────────────────────────────────────────────────────────
+    window.addEventListener('resize', () => {
+      const w = window.innerWidth, h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+  </script>
+</body>
+</html>
